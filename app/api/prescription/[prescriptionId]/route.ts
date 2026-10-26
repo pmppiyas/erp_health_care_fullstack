@@ -4,16 +4,26 @@ import { withAuth } from "@/middleware/withAuth"
 import { Role } from "@/app/api/user/user.interface"
 import Prescription from "../prescription.model"
 import Doctor from "@/app/api/doctor/doctor.model"
-import { updatePrescriptionValidationSchema } from "../prescription.validation"
+import {
+  updatePrescriptionValidationSchema,
+  UpdatePrescriptionInput,
+} from "../prescription.validation"
 import { StatusCodes } from "http-status-codes"
 import { sendResponse } from "@/lib/utils/sendResponse"
 
-export const GET = withAuth(Role.DOCTOR, Role.ADMIN, Role.PATIENT)(async (req: NextRequest, context, user) => {
+export const GET = withAuth(
+  Role.DOCTOR,
+  Role.ADMIN,
+  Role.PATIENT
+)(async (req: NextRequest, context, user) => {
   const { prescriptionId } = await context.params
 
   const prescription = await Prescription.findById(prescriptionId)
     .populate("patientId", "name gender age phone email address")
-    .populate("doctorId", "name specialization hospital phone email qualifications")
+    .populate(
+      "doctorId",
+      "name specialization hospital phone email qualifications"
+    )
     .populate("appointmentId", "appointmentDate appointmentTime status")
 
   if (!prescription) {
@@ -34,7 +44,8 @@ export const GET = withAuth(Role.DOCTOR, Role.ADMIN, Role.PATIENT)(async (req: N
 export const PATCH = withAuthAndValidation(
   updatePrescriptionValidationSchema,
   [Role.DOCTOR],
-  async (req, context, user, data) => {
+  async (req, context, user, data: UpdatePrescriptionInput) => {
+
     const { prescriptionId } = await context.params
     const doctor = await Doctor.findOne({ userId: user.id })
 
@@ -48,7 +59,10 @@ export const PATCH = withAuthAndValidation(
 
     if (prescription.doctorId.toString() !== doctor?._id.toString()) {
       return NextResponse.json(
-        { success: false, message: "Not authorized to update this prescription" },
+        {
+          success: false,
+          message: "Not authorized to update this prescription",
+        },
         { status: StatusCodes.FORBIDDEN }
       )
     }
@@ -68,7 +82,11 @@ export const PATCH = withAuthAndValidation(
   }
 )
 
-export const DELETE = withAuth(Role.DOCTOR)(async (req: NextRequest, context, user) => {
+export const DELETE = withAuth(Role.DOCTOR)(async (
+  req: NextRequest,
+  context,
+  user
+) => {
   const { prescriptionId } = await context.params
   const doctor = await Doctor.findOne({ userId: user.id })
 

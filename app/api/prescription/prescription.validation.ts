@@ -19,3 +19,8 @@ export const createPrescriptionValidationSchema = z.object({
 })
 
 export const updatePrescriptionValidationSchema = createPrescriptionValidationSchema.partial()
+
+export type CreatePrescriptionInput = z.infer<typeof createPrescriptionValidationSchema>
+export type UpdatePrescriptionInput = z.infer<typeof updatePrescriptionValidationSchema>
+
+

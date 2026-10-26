@@ -13,6 +13,8 @@ import Logo from "@/components/shared/Logo"
 import { toast } from "sonner"
 import { useLoginMutation } from "@/redux/features/auth.api"
 import { Role } from "@/app/api/user/user.interface"
+import { ShieldCheck } from "lucide-react"
+import { getDefaultDashboardRoutes } from "@/lib/auth/auth"
 
 const loginSchema = z.object({
   email: z
@@ -27,12 +29,14 @@ const loginSchema = z.object({
 
 type LoginFormValues = z.infer<typeof loginSchema>
 
-import { getDefaultDashboardRoutes } from "@/lib/auth/auth"
-
-
 const LoginPage = () => {
   const router = useRouter()
   const [login, { isLoading }] = useLoginMutation()
+
+  const adminEmail =
+    process.env.NEXT_PUBLIC_ADMIN_EMAIL || "admin@gmail.com"
+  const adminPassword =
+    process.env.NEXT_PUBLIC_ADMIN_PASS || "Admin123"
 
   const {
     register,
@@ -50,6 +54,20 @@ const LoginPage = () => {
   })
 
   const rememberMe = watch("rememberMe")
+
+  const handleFillAdminCredentials = () => {
+    setValue("email", adminEmail, {
+      shouldValidate: true,
+      shouldDirty: true,
+      shouldTouch: true,
+    })
+    setValue("password", adminPassword, {
+      shouldValidate: true,
+      shouldDirty: true,
+      shouldTouch: true,
+    })
+    toast.success("Admin credentials set!")
+  }
 
   const onSubmit = async (data: LoginFormValues) => {
     try {
@@ -109,6 +127,47 @@ const LoginPage = () => {
             <p className="mt-2 text-sm text-muted-foreground">
               Enter your credentials to access your account.
             </p>
+          </div>
+
+          {/* Quick Admin Credentials Autofill */}
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={handleFillAdminCredentials}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault()
+                handleFillAdminCredentials()
+              }
+            }}
+            className="mb-6 flex cursor-pointer items-center justify-between gap-3 rounded-xl border border-primary/20 bg-primary/5 p-3.5 transition-all hover:border-primary/40 hover:bg-primary/10 select-none"
+          >
+            <div className="flex items-center gap-3">
+              <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                <ShieldCheck className="size-5" />
+              </div>
+              <div className="text-left">
+                <p className="text-sm font-semibold text-foreground">
+                  Admin Credentials
+                </p>
+                <p className="text-xs text-muted-foreground font-mono">
+                  {adminEmail}
+                </p>
+              </div>
+            </div>
+
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation()
+                handleFillAdminCredentials()
+              }}
+              className="shrink-0 cursor-pointer border-primary/30 font-medium hover:bg-primary hover:text-primary-foreground"
+            >
+              Auto Fill
+            </Button>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">

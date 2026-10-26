@@ -24,8 +24,8 @@ const envSchema = z.object({
 export const ENV = envSchema.parse({
   NODE_ENV: process.env.NODE_ENV,
   MONGODB_URI: process.env.MONGODB_URI,
-  ADMIN_EMAIL: process.env.ADMIN_EMAIL,
-  ADMIN_PASS: process.env.ADMIN_PASS,
+  ADMIN_EMAIL: process.env.NEXT_PUBLIC_ADMIN_EMAIL || process.env.ADMIN_EMAIL,
+  ADMIN_PASS: process.env.NEXT_PUBLIC_ADMIN_PASS || process.env.ADMIN_PASS,
   SALT_ROUND: process.env.SALT_ROUND,
   JWT_ACCESS_SECRET: process.env.JWT_ACCESS_SECRET,
   JWT_ACCESS_EXPIRED: process.env.JWT_ACCESS_EXPIRED,

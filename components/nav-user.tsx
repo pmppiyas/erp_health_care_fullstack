@@ -56,7 +56,7 @@ export function NavUser() {
     try {
       const response = await logOut().unwrap()
       toast.success(response.message)
-      router.push("/login")
+      window.location.replace("/")
     } catch (error) {
       const message =
         (error as { data?: { message?: string } })?.data?.message ??

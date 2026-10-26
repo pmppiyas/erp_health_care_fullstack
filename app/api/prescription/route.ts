@@ -4,14 +4,18 @@ import { withAuth } from "@/middleware/withAuth"
 import { Role } from "@/app/api/user/user.interface"
 import Prescription from "./prescription.model"
 import Doctor from "@/app/api/doctor/doctor.model"
-import { createPrescriptionValidationSchema } from "./prescription.validation"
+import {
+  createPrescriptionValidationSchema,
+  CreatePrescriptionInput,
+} from "./prescription.validation"
 import { StatusCodes } from "http-status-codes"
 import { sendResponse } from "@/lib/utils/sendResponse"
 
 export const POST = withAuthAndValidation(
   createPrescriptionValidationSchema,
   [Role.DOCTOR],
-  async (req, context, user, data) => {
+  async (req, context, user, data: CreatePrescriptionInput) => {
+
     const doctor = await Doctor.findOne({ userId: user.id })
     if (!doctor) {
       return NextResponse.json(
